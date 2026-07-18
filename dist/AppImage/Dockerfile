@@ -1,4 +1,4 @@
-FROM ubuntu:26.04 as build
+FROM ubuntu:26.04 AS build
 
 # Used to invalidate layer cache but not mount cache
 # See https://github.com/moby/moby/issues/41715#issuecomment-733976493
@@ -10,6 +10,7 @@ RUN --mount=type=cache,target=/var/apt/cache <<EOF
 set -xe
 
 apt update
+apt upgrade -y
 
 # general deps
 apt install -y ccache git wget
@@ -30,7 +31,7 @@ ARG LTO=ON
 ARG BUILD_TYPE=RelWithDebInfo
 ARG GIT_COMMIT_HASH
 ARG GIT_BRANCH
-ARG ARCHITECTURE_PACKAGE=x86_64
+ARG ARCHITECTURE_PACKAGE=amd64
 ARG ARCHITECTURE_FILE_NAME=amd64
 ARG ARCHITECTURE_APPIMAGE_BUILDER=x86_64
 WORKDIR /build
@@ -57,7 +58,7 @@ CC=gcc-14 CXX=g++-14 cmake -G "Ninja"                                \
     /imhex
 EOF
 
-ENV CCACHE_DIR /cache/ccache
+ENV CCACHE_DIR=/cache/ccache
 RUN --mount=type=cache,target=/cache <<EOF
 # Build Imhex
 set -xe

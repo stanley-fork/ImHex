@@ -163,19 +163,19 @@ namespace hex::paths {
         }
 
         std::vector<std::fs::path> PluginPath::all() const {
-            auto paths =  appendPath(getPluginPaths(), m_postfix);
+            auto paths =  getPluginPaths();
 
             // If LD_LIBRARY_PATH was set, load plugins relative to those
             #if defined(OS_LINUX)
                 const auto loadLibraryPaths = hex::getEnvironmentVariable("LD_LIBRARY_PATH");
                 if (loadLibraryPaths.has_value()) {
                     for (const auto &ldLibraryPath : wolv::util::splitString(loadLibraryPaths.value(), ":")) {
-                        paths.emplace_back(ldLibraryPath);
+                        paths.emplace_back(std::fs::path(ldLibraryPath) / "imhex");
                     }
                 }
             #endif
 
-            return paths;
+            return appendPath(paths, m_postfix);
         }
 
     }
